@@ -60,6 +60,9 @@ objects:
       type: Git
     strategy:
       sourceStrategy:
+        env:
+        - name: WITHVOLUME
+          value: "yes"
         from:
           kind: ImageStreamTag
           name: php:5.6
@@ -106,7 +109,7 @@ objects:
     selector:
       name: ${NAME}
     strategy:
-      type: Rolling
+      type: Recreate
     template:
       metadata:
         labels:
@@ -125,14 +128,16 @@ objects:
             value: ${DATABASE_PASSWORD}
           - name: WORDPRESS_SECRET_TOKEN
             value: ${WORDPRESS_SECRET_TOKEN}
+          - name: FS_METHOD
+            value: direct
           - name: WITHVOLUME
-            value: yes
+            value: "yes"
           image: ${NAME}
           name: wordpress
           ports:
           - containerPort: 8080
           volumeMounts:
-          - mountPath: /data
+          - mountPath: /opt/app-root/src/data
             name: ${NAME}-data
         dnsPolicy: ClusterFirst
         restartPolicy: Always
